@@ -17,3 +17,4 @@ Ce script Python utilise LangGraph et LangChain pour analyser des données de mo
 * LangChain 
 * Pydantic (pour la structuration des données)
 * OpenAI API (pour l'accès au LLM)
+* Streaamlit (pour l'IHM)
