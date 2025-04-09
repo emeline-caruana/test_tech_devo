@@ -154,7 +154,7 @@ def file_creation(state):
     print("FINAL STATE : ", state)
 
     with open("Recommendations/recommandations.json", "w") as outfile:
-        json.dump(state, outfile, indent=4, sort_keys=False, ensure_ascii=False).encode('utf8')
+        json.dump(state, outfile, indent=4, sort_keys=False, ensure_ascii=False)#.encode('utf8')
 
 
 

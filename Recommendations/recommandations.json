@@ -1,0 +1,48 @@
+{
+    "input_data": [
+        {
+            "timestamp": "2023-10-01T15:00:00Z",
+            "cpu_usage": 73,
+            "memory_usage": 79,
+            "latency_ms": 213,
+            "disk_usage": 77,
+            "network_in_kbps": 1506,
+            "network_out_kbps": 1618,
+            "io_wait": 6,
+            "thread_count": 165,
+            "active_connections": 73,
+            "error_rate": 0.04,
+            "uptime_seconds": 370800,
+            "temperature_celsius": 67,
+            "power_consumption_watts": 290,
+            "service_status": {
+                "database": "online",
+                "api_gateway": "degraded",
+                "cache": "degraded"
+            }
+        }
+    ],
+    "anomalies": [
+        {
+            "metric": "service_status : api_gateway",
+            "value": "degraded",
+            "issue": "Service api_gateway is degraded"
+        },
+        {
+            "metric": "service_status : cache",
+            "value": "degraded",
+            "issue": "Service cache is degraded"
+        }
+    ],
+    "recommendations": [
+        {
+            "anomalie": "Service api_gateway is degraded",
+            "suggestion": "1. Vérifiez l'état des instances du service api_gateway pour identifier toute instance défaillante.\n2. Augmentez les ressources (CPU, RAM) allouées au service si elles sont insuffisantes.\n3. Consultez les journaux d'erreur pour déterminer la cause sous-jacente de la dégradation.\n4. Si le problème persiste, envisagez de redémarrer le service ou de le remplacer par une nouvelle instance.\n5. Alertes : mettez en place des alertes pour surveiller l'état du service afin de réagir plus rapidement à de futures dégradations."
+        },
+        {
+            "anomalie": "Service cache is degraded",
+            "suggestion": "1. Vérifiez les logs du service cache pour identifier les erreurs spécifiques.\n2. Évaluer la charge actuelle sur le service et optimiser les configurations de mise en cache.\n3. Redémarrez le service cache pour tenter de restaurer son état normal.\n4. Vérifiez les connexions à la base de données ou autres dépendances pouvant affecter le service cache.\n5. Envisagez d'augmenter les ressources allouées au service cache (CPU, mémoire) si les problèmes persistent."
+        }
+    ],
+    "error": null
+}
