@@ -17,6 +17,8 @@ Ce script Python utilise LangGraph et LangChain pour analyser des données de mo
 * **test_app.ipynb :** notebook de creation du script, pour avoir une approche pas à pas et corriger les erreurs plus facilement.
 * **app.py :** script python qui reprend presque tous les éléments du notebook.
 * **app_v2.py :** script python avec interface graphique simple à l'aide de la bibliothèque Streamlit.
+* **Dossier Data :** contient le fichier rapport.json .
+* **Dossier Recommendations :** contient le fichier .json en sortie du script app.py.
 
   
 ## Technologies Utilisées
