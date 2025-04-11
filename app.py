@@ -56,7 +56,7 @@ class PatternAnomalies(BaseModel):
     alors, on peut prévoir ce qui peut se passer avec les recommandations faites en fonction des anomalies
     """
     pattern: str  = Field(description="Tendances/Pattern qui peuvent être significatif d'une anomalie")
-    recommendation: RecommendationList = Field(description="Une liste de recommandations d'optimisation basées sur les anomalies détectées.")
+    recommendation: str = Field(description="Une recommandation d'optimisation basées sur les anomalies détectées.")
 
 class PatternAnomaliesList(BaseModel):
     predictions: List[PatternAnomalies] = Field(description="Une liste de prédiction de tendances qui pourraient entraîner des anomaliess")
@@ -208,7 +208,8 @@ def recommandations_generation(state):
 def predict_anomalies_patern(state):
     """ 
     Noeud de prédiction de tendances dans le rapport complet (données historiques)
-    à partir des anomalies détectées et de patterns déterminés
+    à partir des anomalies détectées et de patterns déterminés.
+    Et donne des recommandations pour éviter de reproduire ces patterns.
     """
     
     print("\n\n### Noeud en cours : Prédiction ###")
@@ -223,7 +224,7 @@ def predict_anomalies_patern(state):
     parser = PydanticOutputParser(pydantic_object = PatternAnomaliesList)
     prompt_template = ChatPromptTemplate.from_messages([("system",
                                                          "Tu es un ingénieur infrastructure expert analysant des anomalies de monitoring. "
-                                                         "Ta tâche est de trouver des tendances dans les timestamps ou ailleurs dans le rapport"
+                                                         "Ta tâche est de trouver des tendances dans les time stamps des rapports ou ailleurs"
                                                          "qui peuvent entraîner les anomalies détectées. "
                                                          "Structure ta réponse exactement selon le schéma JSON fourni."
                                                          "\n{format_instructions}"), 
@@ -234,10 +235,9 @@ def predict_anomalies_patern(state):
                                                           "une liste de rapports sur l'infrastructure :\n"
                                                           "{historic_data}\n\n"
                                                           "Génère une liste de patterns dans les rapports d'infrastructure qui ont pour conséquences ces anomalies, dans un seul texte. "
-                                                          "Pour chaque pattern, fournis une liste de recommandations pour éviter les différentes anomalies."
-                                                          "Pour chaque anomalie, fournis un seul objet `Recommendation` où le champ 'suggestion' regroupe "
-                                                          "toutes les actions proposées pour cette anomalie, séparées par un saut de ligne et listées par des numéros."
-                                                          "S'il n'ya pas d'anomalies, toutes les valeurs sont `None`, alors retourne None aussi pour les suggestions.")
+                                                          "Génère aussi une liste de patterns (heures de fortes afflueunce par exemple) qui peuvent entraîner d'autres conséquences, ou qui ont besoin d'être optimisés."
+                                                          "Pour chaque pattern, fournis une liste de recommandation dans un seul texte séparées par un saut de ligne et listées par des numéros.."
+                                                          "S'il n'ya pas de pattern, alors retourne None pour les recommandations.")
                                                         ])
         
     chain = prompt_template | llm | parser
@@ -249,12 +249,13 @@ def predict_anomalies_patern(state):
         "historic_data": historic_data,
         })
     
-    #print(len(response.predictions))
+    # print(response.predictions)
+    
     for pred in response.predictions :
         print("PRED : ",pred)
         predictions.append({"pattern" : pred.pattern, "recommendation": pred.recommendation})
         
-    #print(predictions)
+    # print(predictions)
     state["predictions"] = predictions
     return state
 
@@ -268,7 +269,7 @@ def file_creation(state):
     #print("FINAL STATE : ", state)
     
     with open("Recommendations/recommendations.json", "w") as outfile:
-        json.dump(state, outfile, indent=4, sort_keys=False, ensure_ascii=False) #.encode('utf8')
+        json.dump(state, outfile, indent=4, sort_keys=False, ensure_ascii=False)
 
 
 
@@ -289,9 +290,10 @@ workflow.set_entry_point("ingestion")
 # Définition des arêtes du graphe
 workflow.add_edge("ingestion", "analyze")
 workflow.add_edge("analyze", "predict")
-workflow.add_edge("predict", "recommend")
-workflow.add_edge("recommend", "file_creation")
+workflow.add_edge("predict", "file_creation")
 workflow.add_edge("file_creation", END)
+# workflow.add_edge("recommend", "file_creation")
+# workflow.add_edge("file_creation", END)
 
 
 # Compilation du graphe
